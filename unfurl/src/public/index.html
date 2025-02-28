@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Source Link Unfurler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .results-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        .results-box img {
+            display: block;
+            max-width: 200px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+        }
+
+        .results-box pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Open Source Link Unfurler</h1>
+    <p>Fetch metadata from any URL! Try it out below:</p>
+
+    <form id="unfurl-form">
+        <label for="url">Enter URL to unfurl:</label>
+        <input type="text" id="url" name="url" placeholder="https://example.com" required>
+        <button type="submit">Unfurl</button>
+    </form>
+
+    <div class="results-box" id="results-box">
+        <h2>Results:</h2>
+        <div id="results-content">Enter a URL above and click "Unfurl" to see the metadata here.</div>
+    </div>
+
+    <script>
+        document.getElementById('unfurl-form').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent form from refreshing the page
+
+            const urlInput = document.getElementById('url').value;
+            const resultsContent = document.getElementById('results-content');
+
+            if (!urlInput) {
+                resultsContent.innerHTML = '<p class="error">Please enter a URL.</p>';
+                return;
+            }
+
+            try {
+                // Send POST request to the unfurl endpoint
+                const response = await fetch('/unfurl', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: urlInput }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    resultsContent.innerHTML = `
+            <p><strong>Title:</strong> ${data.title}</p>
+            <p><strong>Description:</strong> ${data.description}</p>
+            ${data.image ? `<img src="${data.image}" alt="Main Image or Icon">` : '<p>No image found.</p>'}
+            <details>
+              <summary>Raw HTML</summary>
+              <pre><code>${data.html.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+            </details>
+          `;
+                } else {
+                    const errorData = await response.json();
+                    resultsContent.innerHTML = `<p class="error">${errorData.error}</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching metadata:', error);
+                resultsContent.innerHTML = '<p class="error">An error occurred while fetching metadata. Please try again.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>

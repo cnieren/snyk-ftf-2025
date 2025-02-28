@@ -1,0 +1,6 @@
+mariadb
+flask
+flask_limiter
+sqlalchemy
+Flask-SQLAlchemy
+PyMySQL

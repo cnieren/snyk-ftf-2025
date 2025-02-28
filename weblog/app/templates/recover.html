@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Recover Account{% endblock %}
+{% block content %}
+<h1>Password Recovery</h1>
+<form method="POST" action="{{ url_for('auth.recover') }}">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <button type="submit">Recover</button>
+</form>
+{% if success %}
+<p class="success">{{ success }}</p>
+{% elif error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+{% endblock %}

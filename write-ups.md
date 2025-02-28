@@ -94,7 +94,7 @@ The attack angle I came up with was to:
 1. Use the language parameter on the conspiracy page to identify what the file name that was uploaded was called on the server after the unique id was added to the front.
 	- `conspiracy.php?language=logs/site_log.txt`
 2. Use the language parameter again to render our malicious file from the `/uploads` directory.
-	- `conspiracy.php?language=uploads/67c0f14e55c16_get_flag.php.jpg`
+	- `conspiracy.php?language=uploads/<your_unique_id>_get_flag.php.jpg`
 3. Profit!
 
 Flag: flag{6558608db040d1c64358ad536a8e06c6}
@@ -155,3 +155,60 @@ if ($env:MAGIC_KEY -eq 'Sup3rS3cr3t!') {
 In here we find yet another string that looks to be base64 encoded. Coupled with the comment from the first file that mentioned Layer 2. We base64 decode this one and get the flag!
 
 Flag: flag{45d23c1f6789badc1234567890123456}
+
+---
+
+## Time Off
+
+In this challenge we are given access to the source code and an early build of a new time managment app that the fictional team has been building. They have asked us to see if we can find and exploit any security vulernabilities with it.
+
+After dowloading the code and giving it a quick review I was suspicious of the file upload section that was included in the time off request functionality. When a user is creating a new time off request they have the option of uploading a file and also providing a file name. This immediately stood out to me as a potential attack vector. Once I ran the app, I logged in as a standard user and poked around at the different pieces of functionality and sure enough the time off request seemed like the best starting place. I created a new time off request and uploaded a file, then set the file name to something different than what the file was actually named. I then logged in as an Admin user and viewed the time off request, and sure enough there is a link that is created pointing to the invalid filename that I used.
+
+Looking around the file system on the docker container I could see that the flag was stored in the root of the app directory. The system was trying to point to my fake file at `/timeoff_app/public/uploads/the_thing.jpg`. I switched back to the standard user and created a new time off request and uploaded the same file, but this time I entered `../../flag.txt` as the file name. When I switched back to the admin user and clicked on the download link for that file, initiated a download but the file name was the same as the one on the file that I uploaded, not the fake name I gave it. 
+
+I decided to try and change the extenson of the downloaded file to .txt instead of the .png file that I had uploaded, and sure enough, the flag was there.
+
+### Steps
+
+1. Login as a standard user and create a new time off request.
+    - Upload an empty file called `flag.txt` and enter `../../flag.txt' as the file name on the form
+2. Login as an admin user and click on the link to download the file.
+3. Open the file and find your flag.
+
+Flag: flag{52948d88ee74b9bdab130c35c88bd406}
+
+---
+
+## Unfurl
+
+This challenge is a basic example of the dangers of Server Side Request forgery. We are provided the code for a website that has an public interface that allows us to enter a url and it will attemp to unfurl some details about that url, including the title, description, favicon, and raw html of the page. We are also told that there is an admin portal but that it's locked down to localhost based traffic only. Looking at the code in `admin.js` we see the first step the developers took to protect thier juicy admin goods from public abuse, on app start up, it picks a random port between 1024 and 4999 to host the admin portal on. Additionally, if we look at the `adminRoutes.js` file the most dangerous function `execute` has a secondary check to ensure that if that route is executed, the request most be coming from`127.0.0.1` which would only be the case when developing locally *wink* *wink*.
+
+The core attack vector here, is to use the url input on the publicly available unfurler page and aim it at the admin portal to get it to allow us to execute that juicy looking `execute` function. What the execute function does, is take a query parameter called `cmd` and runs it with `exec()`. So we need to trick the unfurler into calling it's own admin page, and trick it into thinking the request is coming from localhost, and finally we want it to execute `cat flag.txt` so we can get our hands on that flag.
+
+### Solution
+1. Open Burp Suite and set up the Proxy Browser to point at the public url unfurl page
+2. Enter `http://127.0.0.1:1024` into the url search box and run the request. It'll likely fail because the port is wrong.
+3. Right click on the request in the HTTP History tab and send it to Intruder
+4. Using Intruder we can perform a Sniper attack
+    - Using a positional payload on the port
+    - Payload type of Numbers
+    - Set the Range From: 1024 To: 4999
+    - Under Settings on the attack, set the Error Handling Retries to 0. We expect most of these to fail and we don't want to waste time retrying 3 times.
+5. Let that run, periodically sort your results by Status Code looking for the 200. Only one request will be a 200 and that port number is where our admin page is hosted.
+6. We can now craft our final url for the unfurler using the port number we just found `http://127.0.0.1:<port>`. Ensure that the intercepter is on in your Burp Proxy and submit that url.
+7. In the interceptor window find the url payload and append this to it `/execute?cmd=cat flag.txt` then forward the request.
+8. In the Raw HTML section of that page you will find the flag for the taking!
+
+Flag: flag{e1c96ccca8777b15bd0b0c7795d018ed}
+
+---
+
+## Weblog
+
+### Users
+admin:admin_password:admin@example.com
+user1:user_password:user1@example.com
+
+## An Offset Amongst Friends
+
+We are provided with a compiled ELF binary. My guess is that we will need to use ghidra or similar to revers engineer this to find the flag.

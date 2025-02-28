@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}User Dashboard{% endblock %}
+{% block content %}
+<h1>Welcome, {{ username }}!</h1>
+<p>This is your blog dashboard. Below are the latest posts:</p>
+
+{% if posts %}
+<ul>
+    {% for post in posts %}
+    <li>
+        <h3><a href="{{ url_for('blog.view_post', post_id=post.id) }}">{{ post.title }}</a></h3>
+        <p>{{ post.content[:25] }}...</p> <!-- Truncated content -->
+        <small>By {{ post.author }} on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No blog posts available.</p>
+{% endif %}
+<a href="{{ url_for('blog.index') }}" class="btn btn-secondary">View All Posts</a>
+{% endblock %}

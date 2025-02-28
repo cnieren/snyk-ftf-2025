@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+<h1>Admin Panel</h1>
+
+<p>Welcome, {{ session.get('username') }}! Modify configurations or manage the web app below:</p>
+
+{% if config_message %}
+<div class="flash success">{{ config_message }}</div>
+{% endif %}
+
+{% if error_message %}
+<div class="flash danger">{{ error_message }}</div>
+{% endif %}
+
+<h2>Web App Statistics</h2>
+<ul>
+    <li><strong>Total Users:</strong> {{ user_count }}</li>
+    <li><strong>Total Blog Posts:</strong> {{ post_count }}</li>
+</ul>
+
+<hr>
+
+<h2>Rebuild Database</h2>
+<form method="POST" action="{{ url_for('admin.admin_panel') }}">
+    <label for="command">Rebuild Database Command:</label>
+    <input type="text" id="command" name="command" value="{{ DEFAULT_COMMAND }}" style="width: 100%;" />
+    <br><br>
+
+    <button type="submit" class="btn btn-danger">Execute</button>
+</form>
+
+<hr>
+
+<h2>Reset User Password</h2>
+<form method="POST" action="{{ url_for('admin.admin_panel') }}">
+    <label for="reset_password_user">Username:</label>
+    <input type="text" id="reset_password_user" name="reset_password_user" placeholder="Enter username" required>
+    <br><br>
+
+    <label for="new_password">New Password:</label>
+    <input type="password" id="new_password" name="new_password" placeholder="Enter new password" required>
+    <br><br>
+
+    <button type="submit" class="btn btn-danger">Reset Password</button>
+</form>
+{% endblock %}

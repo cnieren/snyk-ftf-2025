@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Blog Posts{% endblock %}
+{% block content %}
+<h1>All Blog Posts</h1>
+{% if session.get('user_id') %}
+<a href="{{ url_for('blog.create_post') }}" class="btn">Create a New Post</a>
+{% endif %}
+<ul>
+    {% for post in posts %}
+    <li>
+        <h2><a href="{{ url_for('blog.view_post', post_id=post.id) }}">{{ post.title }}</a></h2>
+        <p>{{ post.content[:50] }}...</p> <!-- Truncated content -->
+        <small>By {{ post.author }} on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        {% if session.get('username') == post.author or session.get('role') == 'admin' %}
+        <div style="margin-top: 10px;">
+            <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn">Edit</a>
+            <form method="POST" action="{{ url_for('blog.delete_post', post_id=post.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

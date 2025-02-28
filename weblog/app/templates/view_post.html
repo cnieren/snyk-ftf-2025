@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<article>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.content }}</p>
+    <small>By {{ post.author }} on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+</article>
+{% if session.get('username') == post.author or session.get('role') == 'admin' %}
+<div>
+    <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn">Edit</a>
+    <form method="POST" action="{{ url_for('blog.delete_post', post_id=post.id) }}" style="display:inline;">
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>
+{% endif %}
+<a href="{{ url_for('blog.index') }}" class="btn btn-secondary">Back to All Posts</a>
+{% endblock %}
