@@ -203,12 +203,12 @@ Flag: flag{e1c96ccca8777b15bd0b0c7795d018ed}
 
 ---
 
-## Weblog
+## Weblog - not completed
 
 ### Users
 admin:admin_password:admin@example.com
 user1:user_password:user1@example.com
 
-## An Offset Amongst Friends
+## An Offset Amongst Friends - not completed
 
 We are provided with a compiled ELF binary. My guess is that we will need to use ghidra or similar to revers engineer this to find the flag.
