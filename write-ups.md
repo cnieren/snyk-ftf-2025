@@ -1,13 +1,27 @@
+# Read the Rules
+This is a basic introductory task, you are directed to a web page that has the rules of the CTF listed and given the hint: If you look closely you can even find a flag hidden on this page. If we view the source code for that page we find the flag in a comment near the bottom of the page.
+
+Flag: flag{90bc54705794a62015369fd8e86e557b}
+
+---
+
+# Technical Support
+This is another introductory task. All we have to do for this one is join the Snyk Discord server. In there we find a channel called `open-help-ticket`, in that channel we find a pined message that instructs us not to create a ticket, but provides us the flag.
+
+Flag: flag{d7aa66ea0edd20221820c84ecc47aee9}
+
+---
+
 # CTF 101
-This is the introductory challenge. When you download the zip file it contains a basic Flask application. Looking at the code in the `app.py` file we find the following two lines:
-```
+This is the first introductory challenge that requires us to exploit something. When you download the zip file it contains a basic Flask application. Looking at the code in the `app.py` file we find the following two lines:
+
+``` Python
 output = subprocess.check_output(f"echo {name}", shell=True, text=True, stderr=subprocess.STDOUT)
 flash(f"Hello, {output.strip()}! Good luck!", "success")
 ```
 
 The first line executes the input from the form directly in echo, then the output of that is sent to the return form.
 
-## Solution
 If we enter `$(cat flag.txt)` into the form, the code will execute our sub-command and send the output of the flag file to the browser for us.
 
 Flag: flag{3b74fc0628299870edabc5072b25cf78}
@@ -16,7 +30,8 @@ Flag: flag{3b74fc0628299870edabc5072b25cf78}
 
 # Screaming Crying Throwing Up
 In this challenge we are provided one file: `screaming.bin`. When inspecting this file with exiftools we see the following:
-```
+
+``` sh
 File Name                       : screaming.bin
 Directory                       : .
 File Size                       : 82 bytes
@@ -38,38 +53,23 @@ Seeing that the MIME Encoding is UTF-8 leads me to think this may be a plain tex
 Running cat on the file produces this:
 `a̮ăaa̋{áa̲aȧa̮ȧaa̮áa̲a̧ȧȧa̮ȧaa̲a̧aa̮ȧa̲aáa̮a̲aa̲a̮aaa̧}`
 
-There is a hint the puzzle that this is associated with the XKCD web comic, and a quick search finds us the [Screaming Crying cypher](https://xkcd.com/3054/) It sure looks like this is what we have here. Another search found me [this encoder/decoder](https://scream-cipher.netlify.app/). Putting our cypher text into that gives us the answer.
+There is a hint the puzzle that this is associated with the XKCD web comic, and a quick search finds us the [Screaming Crying Cypher](https://xkcd.com/3054/). It sure looks like this is what we have here. Another search found me [this encoder/decoder](https://scream-cipher.netlify.app/). Putting our cypher text into that gives us the answer.
 
 Flag: flag{edabfbafedcbbfbadcafbdaefdadfaac}
 
 ---
 
-# Technical Support
-This is another introductory 'challenge'. All we have to do for this one is join the Snyk Discord server. In there we find a channel called `open-help-ticket`, in that channel we find a pined message that instructs us not to create a ticket, but provides us the flag.
-
-Flag: flag{d7aa66ea0edd20221820c84ecc47aee9}
-
----
-
-# Read the Rules
-
-This is another basic introductory challenge, you are directed to a web page that has the rules of the CTF listed and given the hint: If you look closely you can even find a flag hidden on this page. If we view the source code for that page we find the flag in a comment near the bottom of the page.
-
-Flag: flag{90bc54705794a62015369fd8e86e557b}
-
----
-
 # Zero Ex Six One
 
-For this challenge we are provided and encrypted file called `flag.txt.encry`. The file content when output with cat is: `0x070x0d0x000x060x1a0x020x540x510x050x590x530x020x510x000x530x540x070x520x040x570x550x550x050x510x560x510x530x030x550x500x050x030x050x510x590x540x000x1c`
+For this challenge we are provided and encrypted file called `flag.txt.encry`. The file content when output with `cat` is: `0x070x0d0x000x060x1a0x020x540x510x050x590x530x020x510x000x530x540x070x520x040x570x550x550x050x510x560x510x530x030x550x500x050x030x050x510x590x540x000x1c`
 
 This looks like a long string of hexadecimal characters, but most of them aren't in the standard ascii range. Some of the hints we are given:
 - I'm XORta of ideas for how to get this flag.
-- The name of the challenge is a bit of a hint 0x61 is the letter `a` in ascii. 
+- The name of the challenge is a hint as well, 0x61 is the letter `a` in ascii.
 
 For this one I used [Cyber Chef](https://cyberchef.org/#recipe=From_Hex('0x')XOR(%7B'option':'UTF8','string':'a'%7D,'Standard',false)&input=MHgwNzB4MGQweDAwMHgwNjB4MWEweDAyMHg1NDB4NTEweDA1MHg1OTB4NTMweDAyMHg1MTB4MDAweDUzMHg1NDB4MDcweDUyMHgwNDB4NTcweDU1MHg1NTB4MDUweDUxMHg1NjB4NTEweDUzMHgwMzB4NTUweDUwMHgwNTB4MDMweDA1MHg1MTB4NTkweDU0MHgwMDB4MWM)
-1. We convert the string into ascii on the delimiter of 0x
-2. We XOR each character with the letter `a` from the hint in the challenge name
+1. We convert the string into ascii on the delimiter of 0x.
+2. Then we XOR each character with the letter `a`, from the hint in the challenge name
 3. Profit!
 
 This gives us the flag for this challenge.
@@ -80,22 +80,22 @@ Flag: flag{c50d82c0a25f3e644d0702b41dbd085a}
 
 ## WHO IS JH
 
-This challenge required you to discover the vulnerabilities in a website that lets users upload evidence to support the mutli-john-hammond conspiracy. This challenge had a few layers to it.
-- The flag file is in the root of the file system at `/flag.txt`
+This challenge required you to discover the vulnerabilities in a website that lets users upload evidence to support the mutli-john-hammond conspiracy theory. This challenge had a few layers to it.
+- When we inspect the Docker container, the flag file is found in the root of the file system at `/flag.txt`
 - The code for the upload page does a very basic whitelist check on the file extension to only allow .jpg, .gif. and .png file types to be uploaded.
 - The upload code prepends a randomly generated unique id to the filename you supply then saves the file into the uploads directory.
 - The conspiracy page accepts a language parameter that can include folder structures and it will then render the php file you specify with that parameter.
 
 The attack angle I came up with was to:
 1. Create a malicious file that has the following PHP code in it, and name the file `get_flag.php.jpg`
-``` PHP
-<?php echo readfile('/flag.txt') ?>
-```
-1. Use the language parameter on the conspiracy page to identify what the file name that was uploaded was called on the server after the unique id was added to the front.
+    ``` PHP
+    <?php echo readfile('/flag.txt') ?>
+    ```
+2. Use the language parameter on the conspiracy page to identify what the file name that was uploaded was called on the server after the unique id was added to the front.
 	- `conspiracy.php?language=logs/site_log.txt`
-2. Use the language parameter again to render our malicious file from the `/uploads` directory.
+3. Use the language parameter again to render our malicious file from the `/uploads` directory.
 	- `conspiracy.php?language=uploads/<your_unique_id>_get_flag.php.jpg`
-3. Profit!
+4. Profit!
 
 Flag: flag{6558608db040d1c64358ad536a8e06c6}
 
@@ -181,7 +181,7 @@ Flag: flag{52948d88ee74b9bdab130c35c88bd406}
 
 ## Unfurl
 
-This challenge is a basic example of the dangers of Server Side Request forgery. We are provided the code for a website that has an public interface that allows us to enter a url and it will attemp to unfurl some details about that url, including the title, description, favicon, and raw html of the page. We are also told that there is an admin portal but that it's locked down to localhost based traffic only. Looking at the code in `admin.js` we see the first step the developers took to protect thier juicy admin goods from public abuse, on app start up, it picks a random port between 1024 and 4999 to host the admin portal on. Additionally, if we look at the `adminRoutes.js` file the most dangerous function `execute` has a secondary check to ensure that if that route is executed, the request most be coming from`127.0.0.1` which would only be the case when developing locally *wink* *wink*.
+This challenge is a basic example of the dangers of Server Side Request Forgery. We are provided the code for a website that has a public interface that allows us to enter a url and it will attemp to unfurl it to find some details about the web site at that url, including the title, description, favicon, and raw html of the page. We are also told that there is an admin portal but that it's locked down to localhost based traffic only. Looking at the code in `admin.js` we see the first step the developers took to protect thier juicy admin goods from public abuse, on app start up a random port between 1024 and 4999 is selected to host the admin portal on. Additionally, if we look at the `adminRoutes.js` file the most dangerous function `execute` has a secondary check to ensure that if that route is executed, the request most be coming from`127.0.0.1` which would only be the case when developing locally *wink* *wink*.
 
 The core attack vector here, is to use the url input on the publicly available unfurler page and aim it at the admin portal to get it to allow us to execute that juicy looking `execute` function. What the execute function does, is take a query parameter called `cmd` and runs it with `exec()`. So we need to trick the unfurler into calling it's own admin page, and trick it into thinking the request is coming from localhost, and finally we want it to execute `cat flag.txt` so we can get our hands on that flag.
 
